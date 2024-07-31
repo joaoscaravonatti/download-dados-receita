@@ -1,0 +1,61 @@
+services:
+  backend:
+    image: node:latest
+    environment:
+      - NODE_ENV=production
+      - PG_USER=postgres
+      - PG_PASSWORD=12345
+      - PG_DATABASE=postgres
+      - PG_HOST=database
+    working_dir: /app
+    volumes:
+      - .:/app:rw
+    networks:
+      - app-network
+    depends_on:
+      database:
+        condition: service_healthy
+    command: sh -c "npm i && npx knex migrate:latest && npm start"
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - app-network
+    ports:
+      - 8080:8080
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    user: "$UID:$GID"
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana:rw
+    networks:
+      - app-network
+  database:
+    image: postgres:latest
+    restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+      interval: 5s
+      timeout: 30s
+      retries: 10
+    environment:
+      - POSTGRES_PASSWORD=12345
+    networks:
+      - app-network
+    volumes:
+      - ./pg_hba.conf:/var/lib/foo/pg_hba.conf:ro
+      - ./pg_data:/var/lib/postgresql/data:rw
+    command: ["postgres", "-c", "hba_file=/var/lib/foo/pg_hba.conf"]
+
+networks:
+  app-network:
