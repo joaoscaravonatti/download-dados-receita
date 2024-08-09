@@ -18,7 +18,9 @@ export class CompaniesDAO implements InsertCompanyDAO {
       ente_federativo: enteFederativo,
       natureza_juridica: naturezaJuridica,
       razao_social: razaoSocial,
-      porte
+      porte,
+      created_at: new Date(),
+      updated_at: new Date()
     })
   }
 }

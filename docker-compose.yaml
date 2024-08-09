@@ -1,6 +1,6 @@
 services:
   backend:
-    image: node:latest
+    image: node:20.15.1
     environment:
       - NODE_ENV=production
       - PG_USER=postgres
@@ -10,12 +10,13 @@ services:
     working_dir: /app
     volumes:
       - .:/app:rw
+      - node_modules:/app/node_modules
     networks:
       - app-network
     depends_on:
       database:
         condition: service_healthy
-    command: sh -c "npm i && npx knex migrate:latest && npm start"
+    command: sh -c "npm install && npx knex migrate:latest && npm start"
   adminer:
     image: adminer
     restart: always
@@ -30,7 +31,7 @@ services:
     container_name: grafana
     image: grafana/grafana:latest
     restart: unless-stopped
-    user: "$UID:$GID"
+    user: "0:0"
     depends_on:
       database:
         condition: service_healthy
@@ -59,3 +60,5 @@ services:
 
 networks:
   app-network:
+volumes:
+  node_modules:
