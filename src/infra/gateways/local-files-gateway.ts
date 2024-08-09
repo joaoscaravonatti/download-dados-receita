@@ -22,7 +22,7 @@ export class LocalFilesGateway implements ListLocalFilesGateway, ReadLocalFileGa
 
   async *readLocalFile (params: ReadLocalFileGatewayParams): AsyncGenerator<string[]> {
     const { localFile } = params
-    const fileStream = fs.createReadStream(localFile.path, { encoding: 'utf-8' })
+    const fileStream = fs.createReadStream(localFile.path, { encoding: 'latin1' })
     let incomplete = ''
     let itemDataCount = 0
 
@@ -40,7 +40,9 @@ export class LocalFilesGateway implements ListLocalFilesGateway, ReadLocalFileGa
           continue
         }
 
-        yield data.map((item) => item.replaceAll('"', ''))
+        const values = data.map((item) => item.replaceAll('"', ''))
+
+        yield values
       }
     }
   }

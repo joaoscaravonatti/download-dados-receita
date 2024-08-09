@@ -13,7 +13,7 @@ export class InsertCompaniesService extends InsertFileTemplate implements Insert
     super('EMPRECSV', listLocalFilesGateway, readLocalFileGateway)
   }
 
-  async insert (item: string[]): Promise<void> {
+  protected async insert (item: string[]): Promise<void> {
     const [
       cnpjBasico,
       razaoSocial,

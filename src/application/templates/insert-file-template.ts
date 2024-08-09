@@ -8,7 +8,7 @@ export abstract class InsertFileTemplate {
     private readonly readLocalFileGateway: ReadLocalFileGateway
   ) {}
 
-  abstract insert (item: string[]): Promise<void>
+  protected abstract insert (item: string[]): Promise<void>
 
   async run (): Promise<void> {
     const localFiles = await this.listLocalFilesGateway.listLocalFiles()

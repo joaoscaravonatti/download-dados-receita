@@ -3,7 +3,6 @@ import { DownloadRemoteFileGateway, DownloadRemoteFileGatewayParams } from '../.
 import { RemoteFile } from '../../core/entities/remote-file'
 import fs from 'fs'
 import path from 'path'
-import unzipper from 'unzipper'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { JSDOM } from 'jsdom'
@@ -52,16 +51,5 @@ export class RemoteFilesGateway implements ListRemoteFilesGateway, DownloadRemot
       Readable.fromWeb(body as any),
       fs.createWriteStream(tmpFilePath)
     )
-
-    console.log(`Extracting ${remoteFile.name}`)
-
-    const extractPath = path.resolve(...downloadPath)
-
-    await pipeline(
-      fs.createReadStream(tmpFilePath),
-      unzipper.Extract({ path: extractPath })
-    )
-
-    await fs.promises.unlink(tmpFilePath)
   }
 }
